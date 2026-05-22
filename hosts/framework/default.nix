@@ -2,6 +2,7 @@
   imports = [
     ../../modules/home/shell.nix
     ../../modules/home/git.nix
+    ../../modules/home/firefox.nix
   ];
 
   # Machine-specific user environment context
