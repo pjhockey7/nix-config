@@ -2,6 +2,7 @@
   imports = [
     ../../modules/home/firefox.nix
     ../../modules/home/git.nix
+    ../../modules/home/home-manager.nix
     ../../modules/home/rofi.nix
     ../../modules/home/shell.nix
   ];
