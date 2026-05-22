@@ -1,8 +1,9 @@
 { pkgs, ... }: {
   imports = [
-    ../../modules/home/shell.nix
-    ../../modules/home/git.nix
     ../../modules/home/firefox.nix
+    ../../modules/home/git.nix
+    ../../modules/home/rofi.nix
+    ../../modules/home/shell.nix
   ];
 
   # Machine-specific user environment context
@@ -11,7 +12,7 @@
   
   # State version controls backward-compatible defaults. 
   # Leave this at the version you originally installed.
-  home.stateVersion = "24.11"; 
+  home.stateVersion = "26.05"; 
 
   # Let Home Manager install and manage itself
   programs.home-manager.enable = true;
