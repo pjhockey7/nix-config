@@ -17,6 +17,10 @@
             "exit"
         ];
 
+        initExtra = ''
+            export PS1="\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ "
+        '';
+
         shellAliases = {
             # Custom alias to easily rebuild your user configuration from anywhere
             #hms = "home-manager switch --flake ~/src/nix-config#pj@framework";
