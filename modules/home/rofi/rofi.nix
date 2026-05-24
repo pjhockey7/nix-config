@@ -8,5 +8,7 @@
         modes = [
             "drun"
         ];
+
+        theme = ./mytheme.rasi;
     };
 }
