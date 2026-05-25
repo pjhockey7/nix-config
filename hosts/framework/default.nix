@@ -5,6 +5,7 @@
     ../../modules/home/home-manager.nix
     ../../modules/home/rofi/rofi.nix
     ../../modules/home/shell.nix
+    ../../modules/home/desktops/hyprland.nix
   ];
 
   # Machine-specific user environment context
