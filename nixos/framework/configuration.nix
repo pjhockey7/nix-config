@@ -77,8 +77,8 @@
     description = "pj";
     extraGroups = [ "networkmanager" "wheel" ];
     packages = with pkgs; [
-      neovim
       git
+      neovim
     ];
   };
 
