@@ -7,7 +7,6 @@
     settings = {
       "$mainMod" = "Alt";
       "$terminal" = "ghostty";
-      "$fileManager" = "rofi -show filebrowser";
       "$menu" = "rofi -show drun";
 
       monitor = [
@@ -17,11 +16,6 @@
       xwayland = {
         force_zero_scaling = true;
       };
-
-      exec-once = [
-        "waybar"
-        "swww-daemon"
-      ];
 
       env = [
         "XCURSOR_SIZE,15"
@@ -127,7 +121,6 @@
       bind = [
         "$mainMod SHIFT, Return, exec, $terminal"
         "$mainMod, C, killactive,"
-        "$mainMod, E, exec, $fileManager"
         "$mainMod, F, togglefloating,"
         "$mainMod, R, exec, $menu"
         "$mainMod, Return, layoutmsg, swapwithmaster"
@@ -155,11 +148,6 @@
         "$mainMod SHIFT, 0, movetoworkspace, 10"
       ];
 
-      bindm = [
-        "$mainMod, mouse:272, movewindow"
-        "$mainMod, mouse:273, resizewindow"
-      ];
-
       binde = [
         "$mainMod, L, resizeactive, 40 0"
         "$mainMod, H, resizeactive, -40 0"
@@ -178,10 +166,6 @@
         ", XF86AudioPrev, exec, playerctl previous"
       ];
 
-      bindn = [
-        "$mainMod, mouse_down, workspace, e+1"
-        "$mainMod, mouse_up, workspace, e-1"
-      ];
     };
   };
 }

@@ -1,8 +1,7 @@
 {
-  description = "Nix Configuration and Homemanager";
+  description = "NixOS and Homemanager Configurations";
 
   inputs = {
-    # Using unstable branch for fresh packages, perfect for an Arch companion
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     
     home-manager = {
@@ -12,14 +11,20 @@
   };
 
   outputs = { self, nixpkgs, home-manager, ... }@inputs: {
-    # Targets Standalone Home Manager (Arch Linux)
-    # Target name should match your username@hostname format or a specific target moniker
-    homeConfigurations."pj@framework" = home-manager.lib.homeManagerConfiguration {
-      pkgs = nixpkgs.legacyPackages.x86_64-linux;
-      extraSpecialArgs = { inherit inputs; };
-      modules = [
-        ./hosts/framework/default.nix
-      ];
+    # NixOS Configurations
+    # sudo nixos-rebuild switch --flake .#<framework>
+    nixosConfigurations = {
+      framework = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+	modules = [ ./nixos/framework/configuration.nix ];
+      };
+    };
+
+    homeConfigurations = {
+      "pj@framework" = home-manager.lib.homeManagerConfiguration {
+        pkgs = nixpkgs.legacyPackages.x86_64-linux;
+        modules = [ ./home-manager/profiles/framework.nix ];
+      };
     };
   };
 }
