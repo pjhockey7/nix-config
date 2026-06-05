@@ -75,8 +75,9 @@
   users.users.pj = {
     isNormalUser = true;
     description = "pj";
-    extraGroups = [ "networkmanager" "wheel" ];
+    extraGroups = [ "networkmanager" "wheel" "video" ];
     packages = with pkgs; [
+      brightnessctl
       git
       neovim
     ];

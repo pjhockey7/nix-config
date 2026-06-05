@@ -6,6 +6,8 @@
     ../rofi/rofi.nix
     ../shell.nix
     ../desktops/hyprland.nix
+    ../terminals/ghostty.nix
+    ../waybar/waybar.nix
   ];
 
   # Machine-specific user environment context
