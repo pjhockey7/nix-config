@@ -3,6 +3,7 @@
     ../firefox.nix
     ../git.nix
     ../home-manager.nix
+    ../keepassxc.nix
     ../rofi/rofi.nix
     ../shell.nix
     ../desktops/hyprland.nix
