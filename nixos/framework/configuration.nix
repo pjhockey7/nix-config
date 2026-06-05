@@ -105,6 +105,12 @@
     enable = true;
   };
 
+  fonts.packages = with pkgs; [
+    font-awesome
+    noto-fonts-color-emoji
+    nerd-fonts.jetbrains-mono
+  ];
+
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
   # programs.mtr.enable = true;
@@ -118,7 +124,7 @@
     enable = true;
     settings = {
       default_session = {
-        command = "${pkgs.greetd.tuigreet}/bin/tuigreet --time --remember --cmd start-hyprland";
+        command = "${pkgs.tuigreet}/bin/tuigreet --time --remember --cmd start-hyprland";
 	user = "greeter";
       };
     };
