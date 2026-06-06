@@ -98,11 +98,11 @@ in {
         { _args = [ "${mod} + Return" (lib.generators.mkLuaInline "hl.dsp.layout(\"swapwithmaster\")") ]; }
         { _args = [ "${mod} + C" (lib.generators.mkLuaInline "hl.dsp.window.close()") ]; }
         
-	{ _args = [ "${mod} + J" (lib.generators.mkLuaInline "hl.dsp.focus( { direction = \"down\" } )") ]; }
-	{ _args = [ "${mod} + K" (lib.generators.mkLuaInline "hl.dsp.focus( { direction = \"up\" } )") ]; }
+	    { _args = [ "${mod} + J" (lib.generators.mkLuaInline "hl.dsp.focus( { direction = \"down\" } )") ]; }
+	    { _args = [ "${mod} + K" (lib.generators.mkLuaInline "hl.dsp.focus( { direction = \"up\" } )") ]; }
 	
-	{ _args = [ "${mod} + L" (lib.generators.mkLuaInline "hl.dsp.layout( \"mfact +0.05\" )") ]; }
-	{ _args = [ "${mod} + H" (lib.generators.mkLuaInline "hl.dsp.layout( \"mfact -0.05\" )") ]; }
+	    { _args = [ "${mod} + L" (lib.generators.mkLuaInline "hl.dsp.layout( \"mfact +0.05\" )") ]; }
+	    { _args = [ "${mod} + H" (lib.generators.mkLuaInline "hl.dsp.layout( \"mfact -0.05\" )") ]; }
 
         { _args = [ "${mod} + R" (lib.generators.mkLuaInline "hl.dsp.exec_cmd(\"rofi -show drun\")") ]; }
 

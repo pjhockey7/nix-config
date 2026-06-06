@@ -20,10 +20,6 @@
         initExtra = ''
             export PS1="\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ "
             set -o vi
-
-            if [ -z "$SSH_AGENT_PID" ]; then
-              eval "$(ssh-agent -s)"
-            fi
         '';
 
         sessionVariables = {
