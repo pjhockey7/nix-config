@@ -6,7 +6,9 @@
     ../keepassxc.nix
     ../rofi/rofi.nix
     ../shell.nix
+    ../neovim.nix
     ../desktops/hyprland.nix
+    ../desktops/hyprlock.nix
     ../terminals/ghostty.nix
     ../waybar/waybar.nix
   ];
