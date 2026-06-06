@@ -26,6 +26,9 @@
         ];
         "hyprland/workspaces" = {
           format = "{name} {windows}";
+          persistent-workspaces = {
+            "*" = 9;
+          };
           format-window-icons = true;
           window-rewrite-default = "<span font_size='12pt'></span>";
           window-rewrite = {
