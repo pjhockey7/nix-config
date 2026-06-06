@@ -1,13 +1,17 @@
 { pkgs, ... }: {
   programs.git = {
-    settings = {
-        user = {
-            email   = "pjhockey7@gmail.com";
-            name    = "pjhockey7";
-        };
-        init.defaultBranch = "master";
-    };
-    
     enable = true;
+    settings = {
+      user = {
+        name = "pjhockey7";
+        email = "pjhockey7@gmail.com";
+      };
+      init = {
+        defaultBranch = "master";
+      };
+      core = {
+        editor = "nvim";
+      };
+    };
   };
-} 
+}

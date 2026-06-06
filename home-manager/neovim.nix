@@ -50,10 +50,9 @@
       vim.cmd([[colorscheme tokyonight-storm]])
 
       -- LSP Config
-      local lspconfig = require("lspconfig")
-      lspconfig.lua_ls.setup({})
-      lspconfig.clangd.setup({})
-      lspconfig.pylsp.setup({})
+      vim.lsp.config.lua_ls.setup = {}
+      vim.lsp.config.clangd.setup = {}
+      vim.lsp.config.pylsp.setup = {}
     '';
   };
 
