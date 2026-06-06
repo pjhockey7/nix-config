@@ -27,16 +27,16 @@
         "hyprland/workspaces" = {
           format = "{name} {windows}";
           format-window-icons = true;
-          window-rewrite-default = "●";
+          window-rewrite-default = "<span font_size='12pt'></span>";
           window-rewrite = {
-            "class<firefox>" = "<span color='#ff6600'>●</span>";
-            "class<com.mitchellh.ghostty>" = "<span color='#00ff00'>●</span>";
-            "class<ghostty>" = "<span color='#00ff00'>●</span>";
-            "class<org.keepassxc.KeePassXC>" = "<span color='#00ffff'>●</span>";
-            "class<spotify>" = "<span color='#1db954'>●</span>";
-            "class<chromium-browser>" = "<span color='#4285F4'>●</span>";
-            "title<.*nvim.*>" = "<span color='#57a143'>●</span>";
-            "title<.*Vim.*>" = "<span color='#57a143'>●</span>";
+            "class<firefox>" = "<span color='#ff6600' font_size='12pt'></span>";
+            "class<com.mitchellh.ghostty>" = "<span color='#00ff00' font_size='12pt'></span>";
+            "class<ghostty>" = "<span color='#00ff00' font_size='12pt'></span>";
+            "class<org.keepassxc.KeePassXC>" = "<span color='#00ffff' font_size='12pt'></span>";
+            "class<spotify>" = "<span color='#1db954' font_size='12pt'></span>";
+            "class<chromium-browser>" = "<span color='#4285F4' font_size='12pt'></span>";
+            "title<.*nvim.*>" = "<span color='#57a143' font_size='12pt'></span>";
+            "title<.*Vim.*>" = "<span color='#57a143' font_size='12pt'></span>";
           };
         };
         "keyboard-state" = {
