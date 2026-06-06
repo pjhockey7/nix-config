@@ -16,9 +16,9 @@
 
     initLua = ''
       -- Options
-      vim.opt.expandtab = true
-      vim.opt.tabstop = 4
-      vim.opt.shiftwidth = 4
+      --vim.opt.expandtab = true
+      --vim.opt.tabstop = 4
+      --vim.opt.shiftwidth = 4
       vim.opt.shiftround = true
       vim.opt.autoindent = true
       vim.opt.smartindent = true
@@ -63,4 +63,18 @@
     clang-tools
     python3Packages.python-lsp-server
   ];
+
+    xdg.configFile."nvim/ftplugin/nix.lua".text = ''
+        vim.opt_local.tabstop = 2
+        vim.opt_local.shiftwidth = 2
+        vim.opt_local.expandtab = true
+    '';
+
+    xdg.configFile."nvim/ftplugin/c.lua".text = ''
+        vim.opt_local.tabstop = 4
+        vim.opt_local.shiftwidth = 4
+        vim.opt_local.expandtab = false
+    '';
+
+
 }
