@@ -26,6 +26,11 @@
                 settings = {
                     "browser.search.defaultenginename" = "DuckDuckGo";
                     "signon.rememberSignons" = false;
+
+		    "extensions.activeThemeID" = "dark@mozilla.org";
+		    "layout.css.prefers-color-scheme.content-override" = 0;
+
+		    "browser.startup.homepage_override.mstone" = "ignore";
                 };
             };
         };

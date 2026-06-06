@@ -25,9 +25,18 @@
           "tray"
         ];
         "hyprland/workspaces" = {
-          format = "{name}: {icon}";
-          format-icons = {
-            default = "";
+          format = "{name} {windows}";
+          format-window-icons = true;
+          window-rewrite-default = "●";
+          window-rewrite = {
+            "class<firefox>" = "<span color='#ff6600'>●</span>";
+            "class<com.mitchellh.ghostty>" = "<span color='#00ff00'>●</span>";
+            "class<ghostty>" = "<span color='#00ff00'>●</span>";
+            "class<org.keepassxc.KeePassXC>" = "<span color='#00ffff'>●</span>";
+            "class<spotify>" = "<span color='#1db954'>●</span>";
+            "class<chromium-browser>" = "<span color='#4285F4'>●</span>";
+            "title<.*nvim.*>" = "<span color='#57a143'>●</span>";
+            "title<.*Vim.*>" = "<span color='#57a143'>●</span>";
           };
         };
         "keyboard-state" = {
