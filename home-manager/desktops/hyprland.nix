@@ -88,6 +88,13 @@ in {
           force_default_wallpaper = -1;
           disable_hyprland_logo = false;
         };
+        
+        input = {
+          kb_layout = "us";
+          
+          repeat_rate = 50;
+          repeat_delay = 250; # ms pause
+        };
 
         xwayland = {
           force_zero_scaling = true;
