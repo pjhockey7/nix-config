@@ -1,8 +1,4 @@
 { pkgs, ... }: {
-    # Installs packages directly into your user profile store
-    home.packages = with pkgs; [
-        
-    ];
 
     programs.bash = {
         enable = true;

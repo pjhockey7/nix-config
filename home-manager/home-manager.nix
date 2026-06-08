@@ -10,4 +10,9 @@
     name = "Bibata-Modern-Classic";
     size = 24;
   };
+
+  # Installs packages directly into your user profile store
+  home.packages = with pkgs; [
+    signal-desktop
+  ];
 }
