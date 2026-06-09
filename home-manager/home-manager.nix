@@ -14,5 +14,6 @@
   # Installs packages directly into your user profile store
   home.packages = with pkgs; [
     signal-desktop
+    python3
   ];
 }
