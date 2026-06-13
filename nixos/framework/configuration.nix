@@ -8,6 +8,7 @@
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
+      ../modules/steam.nix
     ];
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
@@ -89,16 +90,9 @@
   # $ nix search wget
   environment.systemPackages = with pkgs; [
     neovim
-  #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
   #  wget
   ];
   environment.pathsToLink = [ "/share/xdg-desktop-portal" "/share/applications" ];
-
-  #programs.hyprland = {
-  #  enable = true;
-  #  # If needed add this line for old non wayland apps.
-  #  # xwayland.enable = true;
-  #};
 
   # Wayland graphics support
   hardware.graphics = {
