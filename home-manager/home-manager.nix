@@ -15,5 +15,6 @@
   home.packages = with pkgs; [
     signal-desktop
     python3
+    pavucontrol
   ];
 }

@@ -114,7 +114,7 @@ in {
 
         { _args = [ "${mod} + R" (lib.generators.mkLuaInline "hl.dsp.exec_cmd(\"rofi -show drun\")") ]; }
 
-	      { _args = [ "${mod} + Q" (lib.generators.mkLuaInline "hl.dsp.exit()") ]; }
+	      { _args = [ "${mod} + SHIFT + Q" (lib.generators.mkLuaInline "hl.dsp.exit()") ]; }
       ];
     };
 
@@ -132,6 +132,7 @@ in {
 
       hl.on("hyprland.start", function ()
         hl.exec_cmd("waybar")
+        hl.exec_cmd("blueman-applet")
       end )
 
       -- Laptop multimedia keys for volume and LCD brightness

@@ -18,7 +18,20 @@
   boot.loader.efi.canTouchEfiVariables = true;
 
   # Use latest kernel.
-  boot.kernelPackages = pkgs.linuxPackages_latest;
+  #boot.kernelPackages = pkgs.linuxPackages_latest;
+  boot.kernelPackages = pkgs.linuxPackagesFor (
+    pkgs.linux_latest.override {
+      argsOverride = rec {
+        version = "7.0.6";
+        modDirVersion = "7.0.6";
+        src = pkgs.fetchurl {
+          url = "mirror://kernel/linux/kernel/v7.x/linux-${version}.tar.xz";
+          sha256 = "08vm18wx6399phzgr3wz94yga3ab4fyca79445ygvbspm904996b";
+        };
+      };
+    }
+  ); 
+
 
   networking.hostName = "framework"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
@@ -76,7 +89,7 @@
   users.users.pj = {
     isNormalUser = true;
     description = "pj";
-    extraGroups = [ "networkmanager" "wheel" "video" ];
+    extraGroups = [ "networkmanager" "wheel" "video" "audio" "lp" ];
     packages = with pkgs; [
       brightnessctl
       git
@@ -85,6 +98,9 @@
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
+  
+  # Enable unfree firmware blobs
+  hardware.enableRedistributableFirmware = true;
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
@@ -97,6 +113,33 @@
   # Wayland graphics support
   hardware.graphics = {
     enable = true;
+  };
+
+  # Enable sound with pipewire.
+  hardware.pulseaudio.enable = false;
+  security.rtkit.enable = true;
+  services.pipewire = {
+    enable = true;
+    alsa.enable = true;
+    alsa.support32Bit = true;
+    pulse.enable = true;
+    wireplumber.enable = true;
+  };
+
+  hardware.bluetooth = 
+  {
+    enable = true;
+    powerOnBoot = true;
+    settings = {
+      General = {
+        Experimental = true;
+        FastConnectable = false;
+        # Enable some common profiles
+        Enable = "Source,Sink,Media,Socket";
+        # Force specific controller mode if needed
+        ControllerMode = "dual";
+      };
+    };
   };
 
   fonts.packages = with pkgs; [
@@ -119,10 +162,12 @@
     settings = {
       default_session = {
         command = "${pkgs.tuigreet}/bin/tuigreet --time --remember --cmd start-hyprland";
-	user = "greeter";
+	      user = "greeter";
       };
     };
   };
+
+  services.blueman.enable = true;
 
   systemd.services.greetd.serviceConfig = {
     Type = "idle";
