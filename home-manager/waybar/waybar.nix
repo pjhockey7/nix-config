@@ -40,6 +40,7 @@
             "class<chromium-browser>" = "<span color='#4285F4' font_size='12pt'></span>";
             "title<.*nvim.*>" = "<span color='#57a143' font_size='12pt'></span>";
             "title<.*Vim.*>" = "<span color='#57a143' font_size='12pt'></span>";
+            "class<steam>" = "<span color='#1b2838' font_size='12pt'></span>";
           };
         };
         "keyboard-state" = {
