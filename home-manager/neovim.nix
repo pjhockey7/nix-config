@@ -55,6 +55,7 @@
       vim.lsp.config.lua_ls.setup = {}
       vim.lsp.config.clangd.setup = {}
       vim.lsp.config.pylsp.setup = {}
+      vim.lsp.config.rust_analyzer.setup = {}
     '';
   };
 
@@ -64,6 +65,7 @@
     lua-language-server
     clang-tools
     python3Packages.python-lsp-server
+    rust-analyzer
   ];
 
     xdg.configFile."nvim/ftplugin/nix.lua".text = ''
