@@ -41,6 +41,7 @@
             "title<.*nvim.*>" = "<span color='#57a143' font_size='12pt'></span>";
             "title<.*Vim.*>" = "<span color='#57a143' font_size='12pt'></span>";
             "class<steam>" = "<span color='#1b2838' font_size='12pt'></span>";
+            "class<kicad>" = "<span color='#314CB0' font_size='12pt'></span>";
           };
         };
         "keyboard-state" = {
