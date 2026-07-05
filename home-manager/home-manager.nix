@@ -16,5 +16,6 @@
     signal-desktop
     python3
     pavucontrol
+    unzip
   ];
 }

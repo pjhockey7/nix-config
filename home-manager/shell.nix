@@ -11,6 +11,7 @@
             "ls"
             "cd"
             "exit"
+            "history"
         ];
 
         initExtra = ''
