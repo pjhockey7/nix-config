@@ -115,6 +115,8 @@ in {
         { _args = [ "${mod} + R" (lib.generators.mkLuaInline "hl.dsp.exec_cmd(\"rofi -show drun\")") ]; }
 
 	      { _args = [ "${mod} + SHIFT + Q" (lib.generators.mkLuaInline "hl.dsp.exit()") ]; }
+        { _args = [ "${mod} + F" (lib.generators.mkLuaInline "hl.dsp.window.fullscreen()") ]; }
+        { _args = [ "${mod} + SHIFT + F" (lib.generators.mkLuaInline "hl.dsp.window.float({ action = 'toggle' })") ]; }
       ];
     };
 
@@ -129,6 +131,9 @@ in {
 
         hl.bind(mod .. " + SHIFT + " .. key, hl.dsp.window.move( { workspace = i } ))
       end
+
+      hl.window_rule({ name = "force-tile-all",   match = { class = ".*"    }, float = false })
+      hl.window_rule({ name = "force-tile-kicad", match = { class = "kicad" }, float = false })
 
       hl.on("hyprland.start", function ()
         hl.exec_cmd("waybar")
