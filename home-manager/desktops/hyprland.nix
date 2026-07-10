@@ -1,8 +1,8 @@
-{ config, lib, pkgs, ... }: 
+{ config, lib, pkgs, ... }:
 let
   mod = "ALT";
 in {
-  
+
   wayland.windowManager.hyprland = {
     enable = true;
     systemd.enable = true;
@@ -88,10 +88,10 @@ in {
           force_default_wallpaper = -1;
           disable_hyprland_logo = false;
         };
-        
+
         input = {
           kb_layout = "us";
-          
+
           repeat_rate = 50;
           repeat_delay = 250; # ms pause
         };
@@ -105,10 +105,10 @@ in {
         { _args = [ "${mod} + SHIFT + Return" (lib.generators.mkLuaInline "hl.dsp.exec_cmd(\"ghostty\")") ]; }
         { _args = [ "${mod} + Return" (lib.generators.mkLuaInline "hl.dsp.layout(\"swapwithmaster\")") ]; }
         { _args = [ "${mod} + C" (lib.generators.mkLuaInline "hl.dsp.window.close()") ]; }
-        
+
         { _args = [ "${mod} + K" (lib.generators.mkLuaInline "hl.dsp.window.cycle_next()") ]; }
         { _args = [ "${mod} + J" (lib.generators.mkLuaInline "hl.dsp.window.cycle_next({ next = false })") ]; }
-    
+
         { _args = [ "${mod} + L" (lib.generators.mkLuaInline "hl.dsp.layout( \"mfact +0.05\" )") ]; }
         { _args = [ "${mod} + H" (lib.generators.mkLuaInline "hl.dsp.layout( \"mfact -0.05\" )") ]; }
 
@@ -125,12 +125,12 @@ in {
       local mod = "${mod}"
 
       for i = 1, 9 do
-        local key = tostring(i)
-
-        hl.bind(mod .. " + " .. key, hl.dsp.focus( { workspace = i } ))
-
-        hl.bind(mod .. " + SHIFT + " .. key, hl.dsp.window.move( { workspace = i } ))
+        hl.bind(mod .. " + " .. i, hl.dsp.focus({ workspace = i }))
+        hl.bind(mod .. " + SHIFT + " .. i, hl.dsp.window.move({ workspace = i }))
       end
+
+      hl.bind(mod .. " + 0", hl.dsp.focus({ workspace = 10 }))
+      hl.bind(mod .. " + SHIFT + 0", hl.dsp.window.move({ workspace = 10 }))
 
       hl.window_rule({ name = "force-tile-all",   match = { class = ".*"    }, float = false })
       hl.window_rule({ name = "force-tile-kicad", match = { class = "kicad" }, float = false })

@@ -17,5 +17,6 @@
     python3
     pavucontrol
     unzip
+
   ];
 }
