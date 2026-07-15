@@ -25,6 +25,7 @@
           "tray"
         ];
         "hyprland/workspaces" = {
+          on-click = "activate";
           format = "{name} {windows}";
           persistent-workspaces = {
             "*" = 10;

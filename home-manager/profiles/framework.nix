@@ -7,11 +7,15 @@
     ../rofi/rofi.nix
     ../shell.nix
     ../neovim.nix
+    ../ai/claude.nix
     ../desktops/hyprland.nix
     ../desktops/hyprlock.nix
     ../terminals/ghostty.nix
     ../waybar/waybar.nix
   ];
+
+  # Allow unfree packages
+  nixpkgs.config.allowUnfree = true;
 
   # Machine-specific user environment context
   home.username = "pj";          # Replace with your actual Arch username
