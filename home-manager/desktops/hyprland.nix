@@ -106,8 +106,8 @@ in {
         { _args = [ "${mod} + Return" (lib.generators.mkLuaInline "hl.dsp.layout(\"swapwithmaster\")") ]; }
         { _args = [ "${mod} + C" (lib.generators.mkLuaInline "hl.dsp.window.close()") ]; }
 
-        { _args = [ "${mod} + K" (lib.generators.mkLuaInline "hl.dsp.window.cycle_next()") ]; }
-        { _args = [ "${mod} + J" (lib.generators.mkLuaInline "hl.dsp.window.cycle_next({ next = false })") ]; }
+        { _args = [ "${mod} + J" (lib.generators.mkLuaInline "hl.dsp.window.cycle_next()") ]; }
+        { _args = [ "${mod} + K" (lib.generators.mkLuaInline "hl.dsp.window.cycle_next({ next = false })") ]; }
 
         { _args = [ "${mod} + L" (lib.generators.mkLuaInline "hl.dsp.layout( \"mfact +0.05\" )") ]; }
         { _args = [ "${mod} + H" (lib.generators.mkLuaInline "hl.dsp.layout( \"mfact -0.05\" )") ]; }
