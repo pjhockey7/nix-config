@@ -28,6 +28,14 @@
         system = "x86_64-linux";
         modules = [ ./nixos/nas/configuration.nix ];
       };
+
+      # Uncomment once `nixos/server/hardware-configuration.nix` exists
+      # (generated on the target with `nixos-generate-config --root /mnt`
+      # during the same install procedure used for the nas).
+      # server = nixpkgs.lib.nixosSystem {
+      #   system = "x86_64-linux";
+      #   modules = [ ./nixos/server/configuration.nix ];
+      # };
     };
 
     homeConfigurations = {

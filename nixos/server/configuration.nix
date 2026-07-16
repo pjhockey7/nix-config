@@ -4,25 +4,22 @@ let
   authorizedKeys = [
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKoVu+kHYw/JJ/JUykTh5y2jejlVui8bhhOn+RYxSpDn pjhockey7@gmail.com"
   ];
+  nasHost = "172.16.0.35";
 in
 {
-  imports = [ ./hardware-configuration.nix ];
+  imports = [
+    ./hardware-configuration.nix
+    ./services/jellyfin.nix
+    # ./services/photoprism.nix
+    # ./services/caddy.nix
+  ];
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
-  # ZFS support for the `nas` data pool.
-  boot.supportedFilesystems = [ "zfs" ];
-  boot.zfs.forceImportRoot = false;
-  networking.hostId = "eaa96110";
-  services.zfs.autoScrub.enable = true;
-  # Auto-import the pool at boot (first import required `-f` once because the
-  # pool was last written by FreeBSD; hostid now matches so no `-f` needed).
-  boot.zfs.extraPools = [ "nas" ];
-
-  networking.hostName = "nas";
+  networking.hostName = "server";
   networking.useDHCP = true;
   networking.firewall.enable = true;
 
@@ -44,18 +41,22 @@ in
     openssh.authorizedKeys.keys = authorizedKeys;
   };
 
-  # Passwordless sudo for wheel — SSH is key-only, so this is the bootstrap path.
   security.sudo.wheelNeedsPassword = false;
 
-  # NFS export of the `nas` pool for Linux clients on the LAN.
-  services.nfs.server = {
-    enable = true;
-    exports = ''
-      /nas 172.16.0.0/24(rw,sync,no_subtree_check,no_root_squash)
-    '';
+  # Mount the NAS's NFS export at /nas.
+  # `x-systemd.automount` mounts lazily on first access and doesn't block boot
+  # if the NAS is offline. `nofail` keeps the server bootable regardless.
+  fileSystems."/nas" = {
+    device = "${nasHost}:/nas";
+    fsType = "nfs";
+    options = [
+      "nfsvers=4.2"
+      "x-systemd.automount"
+      "noauto"
+      "nofail"
+      "x-systemd.idle-timeout=600"
+    ];
   };
-  # NFSv4 uses TCP 2049. Restrict to the LAN via the export ACL above.
-  networking.firewall.allowedTCPPorts = [ 2049 ];
 
   environment.systemPackages = with pkgs; [
     git
@@ -63,6 +64,7 @@ in
     btop
     ncdu
     tmux
+    nfs-utils
   ];
 
   system.stateVersion = "25.11";
