@@ -126,11 +126,11 @@ in {
 
       for i = 1, 9 do
         hl.bind(mod .. " + " .. i, hl.dsp.focus({ workspace = i }))
-        hl.bind(mod .. " + SHIFT + " .. i, hl.dsp.window.move({ workspace = i }))
+        hl.bind(mod .. " + SHIFT + " .. i, hl.dsp.window.move({ workspace = i, follow = false }))
       end
 
       hl.bind(mod .. " + 0", hl.dsp.focus({ workspace = 10 }))
-      hl.bind(mod .. " + SHIFT + 0", hl.dsp.window.move({ workspace = 10 }))
+      hl.bind(mod .. " + SHIFT + 0", hl.dsp.window.move({ workspace = 10, follow = false }))
 
       hl.window_rule({ name = "force-tile-all",   match = { class = ".*"    }, float = false })
       hl.window_rule({ name = "force-tile-kicad", match = { class = "kicad" }, float = false })
