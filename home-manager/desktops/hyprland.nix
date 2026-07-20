@@ -94,6 +94,10 @@ in {
 
           repeat_rate = 50;
           repeat_delay = 250; # ms pause
+
+          touchpad = {
+            disable_while_typing = false;
+          };
         };
 
         xwayland = {
