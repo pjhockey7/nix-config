@@ -18,6 +18,8 @@
     python3
     pavucontrol
     unzip
+    zip
+    qbittorrent
 
   ];
 }
