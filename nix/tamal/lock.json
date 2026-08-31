@@ -1,0 +1,7 @@
+{"v":"1.1.0"
+,"i":{
+"nixpkgs":{"sn":"nixpkgs-src","kd":[1,{"ft":0,"ur":"https://github.com/NixOS/nixpkgs/archive/83199d0d373dd3ac2b9a1996b1d0263f76ab7a4c.tar.gz","ms":[]}],"ha":{"al":0,"vl":"sha256-VYXO0XZlgj06dxJZRhrD3WoSsvq/c7+/Akyoa22pefw="},"fv":"83199d0d373dd3ac2b9a1996b1d0263f76ab7a4c","ps":[]}
+,"home-manager":{"sn":"home-manager-src","kd":[1,{"ft":0,"ur":"https://github.com/nix-community/home-manager/archive/99c9ec63390f1d8c14d95d9e8b17cc29cfbd4e11.tar.gz","ms":[]}],"ha":{"al":0,"vl":"sha256-8+Q7NOB7RPajRjA4pbCDLzqH+MTjnG9x6LUPLfL2joA="},"fv":"99c9ec63390f1d8c14d95d9e8b17cc29cfbd4e11","ps":[]}
+}
+,"p":{}
+}

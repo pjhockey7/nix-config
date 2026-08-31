@@ -8,7 +8,8 @@ in
 {
   imports = [ ./hardware-configuration.nix ];
 
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  # Flakes intentionally disabled — inputs pinned by nixtamal (see repo default.nix).
+  nix.settings.experimental-features = [ "nix-command" ];
 
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;

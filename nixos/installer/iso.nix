@@ -1,6 +1,6 @@
 # Headless NixOS installer ISO with SSH pre-authorized.
 #
-# Build:  nix build .#nixosConfigurations.installer-iso.config.system.build.isoImage
+# Build:  nix-build --attr nixosConfigurations.installer-iso.config.system.build.isoImage
 # Flash:  sudo dd if=result/iso/*.iso of=/dev/sdX bs=4M status=progress conv=fsync
 # Use:    boot the target, find its IP, `ssh root@<ip>` — no password prompt.
 

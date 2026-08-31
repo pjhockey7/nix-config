@@ -27,7 +27,7 @@
 
         shellAliases = {
             # Custom alias to easily rebuild your user configuration from anywhere
-            #hms = "home-manager switch --flake ~/src/nix-config#pj@framework";
+            #hms = "nix-build ~/repos/pjhockey7/nix-config -A 'homeConfigurations.\"pj@framework\".activationPackage' -o /tmp/hm && /tmp/hm/activate";
             ls = "ls --color=auto";
             ll = "ls -la";
             la = "ls -a";

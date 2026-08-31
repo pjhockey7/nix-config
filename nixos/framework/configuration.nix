@@ -11,7 +11,9 @@
       ../modules/steam.nix
     ];
 
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  # Flakes intentionally disabled — inputs are pinned by nixtamal (see repo
+  # default.nix / nix/tamal). `nix-command` kept for the modern CLI.
+  nix.settings.experimental-features = [ "nix-command" ];
 
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
