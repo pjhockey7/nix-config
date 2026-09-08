@@ -27,4 +27,10 @@
 
   # Let Home Manager install and manage itself
   programs.home-manager.enable = true;
+
+  # Graphical-only packages; the headless profile shares ../home-manager.nix,
+  # so desktop apps live here instead.
+  home.packages = with pkgs; [
+    vlc # plays mkv/h264/h265 out of the box
+  ];
 }
