@@ -8,7 +8,7 @@ NixOS + Home Manager configuration. **Flake-free** — inputs are pinned with
 ```
 default.nix        # entry point: nixosConfigurations + homeConfigurations
 nix/tamal/         # nixtamal: manifest.kdl (edit) + lock.json (generated)
-nixos/<host>/      # per-host NixOS modules
+nixos/<host>/      # per-host NixOS modules (the TVs share nixos/tv/)
 home-manager/      # Home Manager modules + profiles/
 ```
 
@@ -16,7 +16,8 @@ home-manager/      # Home Manager modules + profiles/
 
 ## Everyday commands
 
-Rebuild + switch a NixOS host (`framework`, `nas`, `tv`) — build the system
+Rebuild + switch a NixOS host (`framework`, `nas`, `tv-main`, `tv-bedroom`,
+`tv-guest`) — build the system
 closure, then activate + update the bootloader:
 
 ```sh
@@ -45,7 +46,7 @@ nix-build -A nixosConfigurations.installer-iso.config.system.build.isoImage
 
 (`nix-build` with no file argument uses `./default.nix`.)
 
-## The `tv` host — open streaming box
+## The `tv-*` hosts — open streaming boxes
 
 Boots straight into a 10-foot launcher. No Chromecast, no Google TV, no Kodi.
 
@@ -62,6 +63,36 @@ greetd (autologin) → labwc → tv-launcher loop
 
 Apps are **modal**, like a set-top box. `nixos/modules/tv` owns the session;
 `nixos/tv/services/casting.nix` owns the receivers.
+
+### One appliance, several rooms
+
+Every box runs the same system and the same `pj` user — they have separate
+disks, so logins and cookies are already per-machine. The hostname is what
+tells them apart, so `ssh tv-bedroom.local` reaches the right one (avahi
+publishes the name; no DHCP reservation needed).
+
+```
+nixos/tv/common.nix         # the whole appliance
+nixos/tv/apps.nix           # the launcher catalog, as an attrset
+nixos/tv/hosts/<room>/      # hostname + the entries that room gets
+```
+
+A host file is a handful of lines:
+
+```nix
+{ config, lib, pkgs, ... }:
+let apps = import ../../apps.nix { inherit config lib pkgs; };
+in {
+  imports = [ ../../common.nix ];
+  networking.hostName = "tv-bedroom";
+  services.tv.apps = with apps; [ jellyfin youtube netflix browser reboot powerOff ];
+}
+```
+
+Adding a TV is a directory here plus its name in `tvRooms` in `default.nix`.
+A room whose remote sends different keycodes sets `services.tv.rcXml` to its
+own labwc config rather than forking the module — run `wev` over SSH to find
+out what the remote actually emits.
 
 ### Why these pieces
 
@@ -83,24 +114,39 @@ Netflix profile via Chrome's managed-policy directory if you want it declarative
 ### Hardware
 
 `nixos/tv/hardware-configuration.nix` is a **placeholder that will not boot** —
-it exists so the host type-checks before hardware exists. Replace it with the
+it exists so the hosts type-check before hardware exists. Replace it with the
 output of `nixos-generate-config --root /mnt` on the real machine.
+
+It is shared by every TV, which only works if they address their filesystems
+identically. Label the partitions at install time and keep the generated file
+on `by-label` rather than the `by-uuid` it defaults to:
+
+```sh
+e2label /dev/nvme0n1p2 NIXOS && fatlabel /dev/nvme0n1p1 BOOT
+```
+
+A box that turns out genuinely different drops its own
+`hardware-configuration.nix` into its host directory and imports that.
 
 x86_64 (Intel N100/N150 class) is the recommended target: mainline kernel
 support and QuickSync VA-API decode. **ARM is now viable too** — Chrome for
 ARM64 Linux shipped stable in July 2026 with a native aarch64 Widevine CDM, and
 `google-chrome` in the pinned nixpkgs lists `aarch64-linux`. A Pi 5 works; it
 just needs a downstream kernel and loses hardware H.264 decode. The Intel VA-API
-drivers in `configuration.nix` are already guarded behind an `isx86_64` check.
+drivers in `common.nix` are already guarded behind an `isx86_64` check.
 
 ### Adding a service
 
-`services.tv.apps` is an ordered list; each entry takes exactly one of `url`
-(isolated Chrome kiosk window) or `command`:
+Add it to the catalog in `nixos/tv/apps.nix`, then name it in whichever
+rooms should show it. Each entry takes exactly one of `url` (isolated Chrome
+kiosk window) or `command`:
 
 ```nix
-{ name = "Plex"; url = "https://app.plex.tv/desktop"; }
+plex = { name = "Plex"; url = "https://app.plex.tv/desktop"; };
 ```
+
+`services.tv.apps` is an ordered list, so a room's menu reads in the order it
+lists them.
 
 Set `userAgent` for sites that gate a TV interface on it — that is why the
 YouTube entry reaches the `/tv` leanback UI instead of the desktop site.
@@ -119,7 +165,8 @@ iwctl                                         # join wifi (ethernet preferred)
 
 Turn on fullscreen inside Jellyfin Desktop once (Settings → Video); it is an
 app setting, not a CLI flag. To rebind the remote's "back" key, edit
-`nixos/modules/tv/rc.xml`.
+`nixos/modules/tv/rc.xml` — or, for one room only, point that host's
+`services.tv.rcXml` at a copy.
 
 ## Updating inputs (replaces `nix flake update`)
 

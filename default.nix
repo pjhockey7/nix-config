@@ -38,18 +38,30 @@ let
       inherit pkgs configuration;
       extraSpecialArgs = { inherit inputs; };
     };
+
+  # The TV boxes differ only by room: nixos/tv/common.nix carries the whole
+  # appliance, and nixos/tv/hosts/<room> sets the hostname and picks its
+  # launcher entries. Adding a TV means a directory and a name in this list.
+  tvRooms = [ "main" "bedroom" "guest" ];
+  tvConfigurations = builtins.listToAttrs (
+    map (room: {
+      name = "tv-${room}";
+      value = mkNixos [ ./nixos/tv/hosts/${room} ];
+    }) tvRooms
+  );
 in
 {
   nixosConfigurations = {
     framework = mkNixos [ ./nixos/framework/configuration.nix ];
     installer-iso = mkNixos [ ./nixos/installer/iso.nix ];
     nas = mkNixos [ ./nixos/nas/configuration.nix ];
-    tv = mkNixos [ ./nixos/tv/configuration.nix ];
-  };
+  } // tvConfigurations;
 
   homeConfigurations = {
     "pj@framework" = mkHome ./home-manager/profiles/framework.nix;
     "pj@nas" = mkHome ./home-manager/profiles/headless.nix;
+    # One profile for every TV: the boxes have separate disks, so nothing
+    # about `pj` needs to differ between them.
     "pj@tv" = mkHome ./home-manager/profiles/tv.nix;
   };
 }

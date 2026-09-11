@@ -166,6 +166,16 @@ in
       default = ./theme.rasi;
       description = "rofi theme used for the launcher.";
     };
+
+    rcXml = lib.mkOption {
+      type = lib.types.path;
+      default = ./rc.xml;
+      description = ''
+        labwc configuration, which is where the remote's keys are bound.
+        Override it on a host whose remote sends different keycodes — run
+        {command}`wev` over SSH to find out what it actually emits.
+      '';
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -191,7 +201,7 @@ in
       };
     };
 
-    environment.etc."xdg/labwc/rc.xml".source = ./rc.xml;
+    environment.etc."xdg/labwc/rc.xml".source = cfg.rcXml;
     environment.etc."xdg/labwc/autostart".text = ''
       ${launcher}/bin/tv-launcher &
     '';
