@@ -16,7 +16,7 @@ home-manager/      # Home Manager modules + profiles/
 
 ## Everyday commands
 
-Rebuild + switch a NixOS host (`framework`, `nas`) — build the system
+Rebuild + switch a NixOS host (`framework`, `nas`, `tv`) — build the system
 closure, then activate + update the bootloader:
 
 ```sh
@@ -31,7 +31,7 @@ nix-build -A nixosConfigurations.framework.config.system.build.toplevel
 nix-build --dry-run -A nixosConfigurations.framework.config.system.build.toplevel
 ```
 
-Activate a Home Manager profile (`pj@framework`, `pj@nas`):
+Activate a Home Manager profile (`pj@framework`, `pj@nas`, `pj@tv`):
 
 ```sh
 nix-build -A 'homeConfigurations."pj@framework".activationPackage' && ./result/activate
@@ -44,6 +44,82 @@ nix-build -A nixosConfigurations.installer-iso.config.system.build.isoImage
 ```
 
 (`nix-build` with no file argument uses `./default.nix`.)
+
+## The `tv` host — open streaming box
+
+Boots straight into a 10-foot launcher. No Chromecast, no Google TV, no Kodi.
+
+```
+greetd (autologin) → labwc → tv-launcher loop
+                                │
+      ┌─────────────────────────┴───────────────────┐
+      │  rofi fullscreen, arrow keys + enter        │
+      │  Jellyfin  Netflix  YouTube  Hulu  Max ...  │
+      └─────────────────────────┬───────────────────┘
+                    pick → run app in FOREGROUND
+                    app exits / Home pressed → back to launcher
+```
+
+Apps are **modal**, like a set-top box. `nixos/modules/tv` owns the session;
+`nixos/tv/services/casting.nix` owns the receivers.
+
+### Why these pieces
+
+| Piece | Why not the obvious alternative |
+|---|---|
+| **labwc**, not cage | cage has no keybindings, so a Chrome `--kiosk` window with no exit affordance (Netflix, Max) is unescapable from a remote. labwc binds `Home` → close. |
+| **Chrome**, not Chromium/Firefox | Chrome is the only browser shipping Widevine on Linux. Each service gets its own `--user-data-dir`, so logins and crashes stay isolated. |
+| **Jellyfin Desktop**, not Jellyfin web | mpv-based, so it direct-plays codecs a browser would force the `server` host to transcode. Also registers as a "Play On" target. |
+| **no Kodi** | Its only unique contribution here was a DLNA renderer, which `gmediarender` provides in six lines — and Kodi has no clean way to shell out to Chrome on Wayland. |
+| **UxPlay**, not Kodi AirPlay | Kodi's AirPlay is legacy audio/photo push; modern iOS mirroring doesn't speak it. |
+
+### The DRM ceiling (accepted tradeoff)
+
+Widevine on Linux is **L3 / "Software Secure" on every architecture**: 720p–1080p,
+no 4K, HDR, Dolby Vision or Atmos. This is not a hardware limit. A browser
+extension can push Netflix from its 720p default to 1080p; install it into the
+Netflix profile via Chrome's managed-policy directory if you want it declarative.
+
+### Hardware
+
+`nixos/tv/hardware-configuration.nix` is a **placeholder that will not boot** —
+it exists so the host type-checks before hardware exists. Replace it with the
+output of `nixos-generate-config --root /mnt` on the real machine.
+
+x86_64 (Intel N100/N150 class) is the recommended target: mainline kernel
+support and QuickSync VA-API decode. **ARM is now viable too** — Chrome for
+ARM64 Linux shipped stable in July 2026 with a native aarch64 Widevine CDM, and
+`google-chrome` in the pinned nixpkgs lists `aarch64-linux`. A Pi 5 works; it
+just needs a downstream kernel and loses hardware H.264 decode. The Intel VA-API
+drivers in `configuration.nix` are already guarded behind an `isx86_64` check.
+
+### Adding a service
+
+`services.tv.apps` is an ordered list; each entry takes exactly one of `url`
+(isolated Chrome kiosk window) or `command`:
+
+```nix
+{ name = "Plex"; url = "https://app.plex.tv/desktop"; }
+```
+
+Set `userAgent` for sites that gate a TV interface on it — that is why the
+YouTube entry reaches the `/tv` leanback UI instead of the desktop site.
+
+### First-run and debugging
+
+The box has no terminal of its own; SSH in as `pj`.
+
+```sh
+systemctl --user status uxplay gmediarender   # receivers (run inside the session)
+journalctl -u greetd -b                       # session/compositor startup
+vainfo                                        # confirm hardware decode came up
+wev                                           # find the keycodes your remote sends
+iwctl                                         # join wifi (ethernet preferred)
+```
+
+Turn on fullscreen inside Jellyfin Desktop once (Settings → Video); it is an
+app setting, not a CLI flag. To rebind the remote's "back" key, edit
+`nixos/modules/tv/rc.xml`.
 
 ## Updating inputs (replaces `nix flake update`)
 

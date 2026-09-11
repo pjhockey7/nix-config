@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<!--
+  labwc configuration for the TV session.
+
+  The important part is the keybinds: Chrome's kiosk mode has no exit
+  affordance, so without a compositor-level "close the focused window" key
+  a service like Netflix or Max would be unescapable from a remote. Home
+  and XF86HomePage are what HID media remotes actually send, so both are
+  bound; Alt+F4 is kept for a real keyboard.
+
+  (Note for future edits: XML comments cannot contain a double hyphen, so
+  flags are written without their leading dashes in this file.)
+
+  Closing the app ends its process, which returns the launcher loop to rofi.
+-->
+<labwc_config>
+  <core>
+    <gap>0</gap>
+  </core>
+
+  <theme>
+    <keepBorder>no</keepBorder>
+  </theme>
+
+  <placement>
+    <policy>center</policy>
+  </placement>
+
+  <keyboard>
+    <default />
+    <keybind key="Home">
+      <action name="Close" />
+    </keybind>
+    <keybind key="XF86HomePage">
+      <action name="Close" />
+    </keybind>
+    <keybind key="A-F4">
+      <action name="Close" />
+    </keybind>
+  </keyboard>
+
+  <!-- Apps fullscreen themselves; titlebars would just be clutter on a TV. -->
+  <windowRules>
+    <windowRule identifier="*" serverDecoration="no" />
+  </windowRules>
+</labwc_config>

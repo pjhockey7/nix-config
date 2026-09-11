@@ -1,0 +1,65 @@
+/**
+ * rofi theme for the TV launcher — a 10-foot UI.
+ *
+ * Sized for a couch: large type, a 3x3 grid of tiles, and a selection
+ * highlight strong enough to track from across a room. Driven with
+ * arrow keys + enter, which is what every HID media remote sends.
+ */
+
+* {
+    bg:        #0b0b0f;
+    tile:      #16161f;
+    tile-sel:  #3b82f6;
+    fg:        #e8e8ef;
+    fg-sel:    #ffffff;
+
+    background-color: transparent;
+    text-color:       @fg;
+    font:             "JetBrainsMono Nerd Font 26";
+}
+
+window {
+    fullscreen:       true;
+    background-color: @bg;
+    padding:          6% 8%;
+    children:         [ mainbox ];
+}
+
+mainbox {
+    children: [ listview ];
+}
+
+/* The prompt/entry line is dead weight without a keyboard. */
+inputbar {
+    enabled: false;
+}
+
+listview {
+    columns:      3;
+    lines:        3;
+    spacing:      2.5%;
+    cycle:        true;
+    scrollbar:    false;
+    dynamic:      true;
+    fixed-height: false;
+}
+
+element {
+    padding:          4% 3%;
+    border-radius:    18px;
+    background-color: @tile;
+    text-color:       @fg;
+    orientation:      vertical;
+}
+
+element selected {
+    background-color: @tile-sel;
+    text-color:       @fg-sel;
+}
+
+element-text {
+    background-color: inherit;
+    text-color:       inherit;
+    horizontal-align: 0.5;
+    vertical-align:   0.5;
+}

@@ -44,10 +44,12 @@ in
     framework = mkNixos [ ./nixos/framework/configuration.nix ];
     installer-iso = mkNixos [ ./nixos/installer/iso.nix ];
     nas = mkNixos [ ./nixos/nas/configuration.nix ];
+    tv = mkNixos [ ./nixos/tv/configuration.nix ];
   };
 
   homeConfigurations = {
     "pj@framework" = mkHome ./home-manager/profiles/framework.nix;
     "pj@nas" = mkHome ./home-manager/profiles/headless.nix;
+    "pj@tv" = mkHome ./home-manager/profiles/tv.nix;
   };
 }
