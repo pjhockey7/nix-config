@@ -10,13 +10,16 @@ let
   apps = import ../../apps.nix { inherit config lib pkgs; };
 in
 {
-  imports = [ ../../common.nix ];
+  imports = [
+    ../../common.nix
+    ../../hardware-configuration.nix
+  ];
 
   networking.hostName = "tv-guest";
 
   services.tv.apps = with apps; [
     jellyfin
-    youtube
+    youtubeTv
     browser
     reboot
     powerOff

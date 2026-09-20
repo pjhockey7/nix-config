@@ -6,14 +6,17 @@ let
   apps = import ../../apps.nix { inherit config lib pkgs; };
 in
 {
-  imports = [ ../../common.nix ];
+  imports = [
+    ../../common.nix
+    ../../hardware-configuration.nix
+  ];
 
   networking.hostName = "tv-main";
 
   services.tv.apps = with apps; [
     jellyfin
     netflix
-    youtube
+    youtubeTv
     hulu
     max
     browser

@@ -1,6 +1,19 @@
 { pkgs, ... }: {
   programs.waybar = {
     enable = true;
+
+    # Run waybar as a user unit rather than as a bare process spawned by
+    # Hyprland's start hook. The unit is `Restart = "on-failure"` and is
+    # wanted by graphical-session.target, so a crash comes back on its own.
+    #
+    # This matters because waybar's pulseaudio module aborts when its
+    # connection drops, and `switch-to-configuration` restarts the PipeWire
+    # user units on every system switch — which used to leave the bar gone
+    # for the rest of the session. See hyprland.nix, where the old
+    # `hl.exec_cmd("waybar")` start hook has been removed to avoid a second
+    # copy racing this one.
+    systemd.enable = true;
+
     settings = {
       mainBar = {
         height = 20;

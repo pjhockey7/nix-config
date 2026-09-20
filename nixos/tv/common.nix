@@ -21,12 +21,11 @@ let
   ];
 in
 {
+  # Hardware is *not* imported here — each host picks its own, because the
+  # boxes are no longer all the same machine. The x86 rooms import the shared
+  # ./hardware-configuration.nix (they address their filesystems by label, so
+  # one file covers them); a Pi imports ./hardware-pi4.nix instead.
   imports = [
-    # Shared because the boxes are the same model and address their
-    # filesystems by label, not by UUID. A box that turns out different
-    # (other NIC, no Intel iGPU) drops its own file in its host directory
-    # and imports that instead.
-    ./hardware-configuration.nix
     ../modules/tv
     ./services/casting.nix
   ];
@@ -34,8 +33,10 @@ in
   # Flakes intentionally disabled — inputs pinned by nixtamal (see repo default.nix).
   nix.settings.experimental-features = [ "nix-command" ];
 
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
+  # UEFI, which is right for every x86 box but not for a Pi — mkDefault so
+  # hardware-pi4.nix can switch to extlinux without lib.mkForce.
+  boot.loader.systemd-boot.enable = lib.mkDefault true;
+  boot.loader.efi.canTouchEfiVariables = lib.mkDefault true;
 
   # An appliance should look like one while booting, not like a kernel log.
   boot.plymouth.enable = true;

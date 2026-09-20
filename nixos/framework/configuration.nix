@@ -15,6 +15,14 @@
   # default.nix / nix/tamal). `nix-command` kept for the modern CLI.
   nix.settings.experimental-features = [ "nix-command" ];
 
+  # Build aarch64 closures here — the tv-bedroom Raspberry Pi has no business
+  # compiling its own system. qemu-user is registered for aarch64-linux and
+  # "aarch64-linux" is added to nix.settings.extra-platforms, so
+  # `nix-build -A nixosConfigurations.tv-bedroom...` just works; almost the
+  # whole closure comes from cache.nixos.org and only the unfree bits
+  # (google-chrome) actually run under emulation.
+  boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
+
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
@@ -51,15 +59,36 @@
   # Use systemd-networkd instaed of NetworkManager
   networking.useNetworkd = true;
 
-  # Configure DHCP for both Ethernet and Wireless
+  # Configure DHCP for both Ethernet and Wireless.
+  #
+  # MulticastDNS is what makes `ssh tv-bedroom.local` work. systemd-resolved
+  # already speaks mDNS and nsswitch already routes through it (`resolve`),
+  # but resolved only answers .local on links where it is switched on — it
+  # defaults to off per-link, so the global "+mDNS" in `resolvectl status` is
+  # misleading on its own.
+  #
+  # "resolve", not "yes": we look up other machines' .local names but do not
+  # announce this laptop's hostname to whatever network it is plugged into.
+  # The TVs need the other half (they publish, and casting.nix advertises
+  # AirPlay/DLNA service records), which is why they run avahi instead —
+  # resolved has no general DNS-SD service registration.
+  #
+  # The firewall hole below is not optional and is easy to miss: mDNS answers
+  # arrive as inbound UDP on 5353, so with the firewall on and that port shut
+  # every query times out as "All attempts to contact name servers or networks
+  # failed" even though MulticastDNS is correctly enabled on the link. avahi's
+  # NixOS module opens this itself via `openFirewall`; setting MulticastDNS=
+  # on a networkd link has no equivalent hook, so it is done by hand here.
   systemd.network.networks = {
     "30-ethernet" = {
       matchConfig.Name = "en*";
       networkConfig.DHCP = "yes";
+      networkConfig.MulticastDNS = "resolve";
     };
     "40-wireless" = {
       matchConfig.Name = "wl*";
       networkConfig.DHCP = "yes";
+      networkConfig.MulticastDNS = "resolve";
     };
   };
 
@@ -192,6 +221,9 @@
   # Open ports in the firewall.
   # networking.firewall.allowedTCPPorts = [ ... ];
   # networking.firewall.allowedUDPPorts = [ ... ];
+
+  # mDNS (.local name resolution) — see the MulticastDNS note above.
+  networking.firewall.allowedUDPPorts = [ 5353 ];
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
 

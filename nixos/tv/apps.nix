@@ -13,6 +13,7 @@ let
   # youtube.com/tv (the leanback/10-foot UI, and the one that pairs with a
   # phone via "Link with TV code") redirects to the desktop site unless it
   # sees a TV User-Agent. Refresh this if YouTube starts bouncing you.
+  # Used by the `youtubeTv` entry only; see the note there.
   tvUserAgent =
     "Mozilla/5.0 (SMART-TV; Linux; Tizen 5.0) AppleWebKit/537.36 "
     + "(KHTML, like Gecko) 69.0.3497.106 Safari/537.36";
@@ -35,7 +36,18 @@ in
     url = "https://www.netflix.com/browse";
   };
 
+  # Two YouTubes, because the right one depends on what the room's remote is.
+  #
+  # The leanback UI is a genuine D-pad interface and ignores a mouse cursor,
+  # so a room driven by a pointer-style remote (an air mouse with no D-pad)
+  # cannot use it at all. The desktop site is the opposite trade: no 10-foot
+  # UI, but fully mouse-navigable.
   youtube = {
+    name = "YouTube";
+    url = "https://www.youtube.com";
+  };
+
+  youtubeTv = {
     name = "YouTube";
     url = "https://www.youtube.com/tv";
     userAgent = tvUserAgent;

@@ -21,9 +21,15 @@ Rebuild + switch a NixOS host (`framework`, `nas`, `tv-main`, `tv-bedroom`,
 closure, then activate + update the bootloader:
 
 ```sh
-nix-build -A nixosConfigurations.framework.config.system.build.toplevel \
-  && sudo ./result/bin/switch-to-configuration switch
+sudo nixos-rebuild switch --file . --attr nixosConfigurations.framework
 ```
+
+Use `nixos-rebuild`, not a bare `./result/bin/switch-to-configuration switch`.
+The latter activates the new system in the running session but never runs
+`nix-env -p /nix/var/nix/profiles/system --set`, so no generation is created —
+and since the bootloader builds its entry list from those generations, the next
+reboot silently comes up on the *previous* generation with all your changes
+gone.
 
 Build a host without switching / evaluate only:
 
@@ -72,9 +78,10 @@ tells them apart, so `ssh tv-bedroom.local` reaches the right one (avahi
 publishes the name; no DHCP reservation needed).
 
 ```
-nixos/tv/common.nix         # the whole appliance
+nixos/tv/common.nix         # the whole appliance, hardware-agnostic
 nixos/tv/apps.nix           # the launcher catalog, as an attrset
-nixos/tv/hosts/<room>/      # hostname + the entries that room gets
+nixos/tv/hardware-*.nix     # x86 (generated) and Raspberry Pi 4 hardware
+nixos/tv/hosts/<room>/      # hostname + hardware + the entries that room gets
 ```
 
 A host file is a handful of lines:
@@ -83,11 +90,15 @@ A host file is a handful of lines:
 { config, lib, pkgs, ... }:
 let apps = import ../../apps.nix { inherit config lib pkgs; };
 in {
-  imports = [ ../../common.nix ];
-  networking.hostName = "tv-bedroom";
+  imports = [ ../../common.nix ../../hardware-configuration.nix ];
+  networking.hostName = "tv-guest";
   services.tv.apps = with apps; [ jellyfin youtube netflix browser reboot powerOff ];
 }
 ```
+
+`common.nix` imports no hardware of its own — the host picks it, which is what
+lets `tv-bedroom` be a Raspberry Pi (`../../hardware-pi4.nix`) while the other
+two share the x86 `../../hardware-configuration.nix`.
 
 Adding a TV is a directory here plus its name in `tvRooms` in `default.nix`.
 A room whose remote sends different keycodes sets `services.tv.rcXml` to its
@@ -117,23 +128,99 @@ Netflix profile via Chrome's managed-policy directory if you want it declarative
 it exists so the hosts type-check before hardware exists. Replace it with the
 output of `nixos-generate-config --root /mnt` on the real machine.
 
-It is shared by every TV, which only works if they address their filesystems
-identically. Label the partitions at install time and keep the generated file
-on `by-label` rather than the `by-uuid` it defaults to:
+It is shared by the two x86 TVs (`tv-main`, `tv-guest`), which only works if
+they address their filesystems identically. Label the partitions at install
+time and keep the generated file on `by-label` rather than the `by-uuid` it
+defaults to:
 
 ```sh
 e2label /dev/nvme0n1p2 NIXOS && fatlabel /dev/nvme0n1p1 BOOT
 ```
 
 A box that turns out genuinely different drops its own
-`hardware-configuration.nix` into its host directory and imports that.
+`hardware-configuration.nix` into its host directory and imports that —
+`tv-bedroom` does exactly this with `nixos/tv/hardware-pi4.nix`.
 
-x86_64 (Intel N100/N150 class) is the recommended target: mainline kernel
-support and QuickSync VA-API decode. **ARM is now viable too** — Chrome for
-ARM64 Linux shipped stable in July 2026 with a native aarch64 Widevine CDM, and
-`google-chrome` in the pinned nixpkgs lists `aarch64-linux`. A Pi 5 works; it
-just needs a downstream kernel and loses hardware H.264 decode. The Intel VA-API
-drivers in `common.nix` are already guarded behind an `isx86_64` check.
+x86_64 (Intel N100/N150 class) is the best target: mainline kernel support and
+QuickSync VA-API decode. **ARM works too** — Chrome for ARM64 Linux ships a
+native aarch64 Widevine CDM, and `google-chrome` in the pinned nixpkgs lists
+`aarch64-linux`. `tv-bedroom` is a Raspberry Pi 4; see below. The Intel VA-API
+drivers in `common.nix` are guarded behind an `isx86_64` check.
+
+## Installing onto a Raspberry Pi 4 (`tv-bedroom`), headless
+
+`nixos/tv/hardware-pi4.nix` is the whole story: it pins the host to
+`aarch64-linux`, swaps systemd-boot for extlinux behind u-boot, turns on zram,
+and imports nixpkgs' `sd-image` module. So the host attribute builds both the
+running system *and* a bootable card, and the two are the same closure —
+nothing to install by hand, no installer ISO, no keyboard on the TV.
+
+**1. Teach the Framework to build aarch64.** `boot.binfmt.emulatedSystems` is
+already set in `nixos/framework/configuration.nix`; it also adds
+`aarch64-linux` to `nix.settings.extra-platforms`, which is the part that makes
+`nix-build` willing to do it.
+
+```sh
+sudo nixos-rebuild switch --file . --attr nixosConfigurations.framework
+nix config show extra-platforms     # expect aarch64-linux
+```
+
+**2. Cut the card.** ~2.3 GiB comes from cache.nixos.org; only `google-chrome`
+and `rofi` actually compile/patch under qemu, so budget tens of minutes, not
+hours.
+
+```sh
+nix-build -A nixosConfigurations.tv-bedroom.config.system.build.sdImage
+lsblk                                # find the card — the disk, not a partition
+zstdcat result/sd-image/*.img.zst \
+  | sudo dd of=/dev/sdX bs=4M status=progress conv=fsync
+```
+
+**3. Boot it.** Ethernet in, card in, power on. The root partition resizes to
+the card on first boot, then it goes straight to the launcher. `pj`'s key is
+already authorized, and avahi publishes the name:
+
+```sh
+ssh pj@tv-bedroom.local
+```
+
+**4. Home Manager.** The repo keeps HM standalone, so it is a separate
+activation. Build it on the Framework rather than making the Pi do it — `root`
+is a trusted user on the far end, which is what lets the unsigned paths land:
+
+```sh
+nix-build --argstr system aarch64-linux -A 'homeConfigurations."pj@tv".activationPackage'
+nix copy --to ssh://root@tv-bedroom.local ./result
+ssh pj@tv-bedroom.local "$(readlink -f result)/activate"
+```
+
+**Afterwards**, deploy system changes the same way instead of rebuilding on the
+Pi:
+
+```sh
+nix-build -A nixosConfigurations.tv-bedroom.config.system.build.toplevel
+nix copy --to ssh://root@tv-bedroom.local ./result
+ssh root@tv-bedroom.local \
+  "nix-env -p /nix/var/nix/profiles/system --set $(readlink -f result) \
+   && /nix/var/nix/profiles/system/bin/switch-to-configuration switch"
+```
+
+### What the Pi 4 costs you
+
+`/boot/firmware/config.txt` is written **when the card is cut**, not on switch —
+`dtoverlay=vc4-kms-v3d` lives there, and without it a mainline kernel brings up
+no DRM device at all and you get a black screen with a perfectly healthy sshd.
+Changing anything under `sdImage` means re-flashing.
+
+There is no VA-API driver for the Pi's v3d, so Chrome decodes everything on the
+CPU — the `--enable-features=Vaapi*` flags in `nixos/modules/tv` are simply
+inert there. 1080p H.264 is fine; YouTube's VP9/AV1 is not, so the leanback UI
+will settle around 720p, which is also where Widevine L3 caps out anyway.
+Jellyfin is the good path: it goes through mpv, not Chrome.
+
+If the TV is switched off when the Pi boots, it presents no EDID and the kernel
+brings up no output — turning the TV on afterwards does not recover it. The fix
+is a forced mode; `hardware-pi4.nix` documents the two lines to uncomment.
 
 ### Adding a service
 

@@ -139,8 +139,10 @@ in {
       hl.window_rule({ name = "force-tile-all",   match = { class = ".*"    }, float = false })
       hl.window_rule({ name = "force-tile-kicad", match = { class = "kicad" }, float = false })
 
+      -- waybar is NOT started here: it runs as a systemd user unit so that it
+      -- restarts itself if it crashes (see ../waybar/waybar.nix). A start
+      -- hook only fires once, so a mid-session crash was permanent.
       hl.on("hyprland.start", function ()
-        hl.exec_cmd("waybar")
         hl.exec_cmd("blueman-applet")
       end )
 

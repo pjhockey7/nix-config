@@ -10,7 +10,11 @@
 #
 # The justfile wraps these; see `just` for the short forms.
 
-{ system ? "x86_64-linux" }:
+# `system` is the *build* machine. A host that targets another architecture
+# says so itself (nixos/tv/hardware-pi4.nix sets nixpkgs.hostPlatform), so
+# this only has to follow whatever machine you happen to be sitting at —
+# which matters for the Home Manager profiles, which have no host to ask.
+{ system ? builtins.currentSystem }:
 
 let
   inputs = import ./nix/tamal { inherit system; };
@@ -42,6 +46,8 @@ let
   # The TV boxes differ only by room: nixos/tv/common.nix carries the whole
   # appliance, and nixos/tv/hosts/<room> sets the hostname and picks its
   # launcher entries. Adding a TV means a directory and a name in this list.
+  # tv-bedroom is a Raspberry Pi 4 and evaluates as aarch64-linux regardless
+  # of the `system` above; see nixos/tv/hardware-pi4.nix.
   tvRooms = [ "main" "bedroom" "guest" ];
   tvConfigurations = builtins.listToAttrs (
     map (room: {
